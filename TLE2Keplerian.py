@@ -42,8 +42,8 @@ Ecc = float('0.'+Ecc)
 SMA = MM2SMA(MM)
 TA = pyastro.kepler(MA,Ecc)
 
-print "Year:",EpochY,"\nDay:",EpochD,"\nInc:",Inc,"\nRAAN:",RAAN,
-"\nEcc:",Ecc,"\nAoP:",AoP,"\nMA:",MA,"\nMM:",MM, "TA:", TA, "SMA:", SMA
+print "Year:",EpochY,"\nDay:",EpochD,"\nInc:",Inc,"\nRAAN:",RAAN,"\nEcc:",Ecc
+print "AoP:",AoP,"\nMA:",MA,"\nMM:",MM, "\nTA:", TA, "\nSMA:", SMA
 Epoch = (datetime(EpochY-1,12,31) + timedelta(EpochD)).strftime("%d %b %Y %H:%M:%S.%f")[:-3]
 print "Epoch:", Epoch
 

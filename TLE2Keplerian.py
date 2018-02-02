@@ -1,17 +1,35 @@
-from math import pi
-import pyastro
+from math import pi, sin, cos, radians, degrees, floor, sqrt, atan2
 from datetime import datetime, timedelta
 from sys import stdin
 
 def MM2SMA(MM):
 	MU = 398600.4418
-	# ! Convert Mean motion from revs/day to rad/s  
+	# ! Convert Mean motion from revs/day to rad/s
 	MM = MM*((2*pi)/86400)
 	return (MU/(MM**2))**(1.0/3.0)
 
 def checksum(line):
     """Compute the TLE checksum."""
-    return (sum((int(c) if c.isdigit() else c == '-') for c in line[0:-1]) % 10) == int(line[-1]) 
+    return (sum((int(c) if c.isdigit() else c == '-') for c in line[0:-1]) % 10) == int(line[-1])
+
+def getEccentricAnomaly(ecc, MA):
+	precision = 1e-6
+	iterLimit = 50
+	i = 0
+
+	EA = MA
+	F = EA - ecc * sin(MA) - MA
+
+	while ((abs(F) > precision) and (i < iterLimit)):
+		EA = EA - F / (1.0 - ecc * cos(EA))
+		F = EA - ecc * sin(EA) - MA
+		i += 1
+
+	return degrees(EA)
+
+def getTrueAnomaly(ecc, EA):
+	fak = sqrt(1.0 - ecc * ecc)
+	return degrees(atan2(fak * sin(EA), cos(EA) - ecc))
 
 print "Enter TLE including object title:"
 
@@ -40,11 +58,12 @@ MA = float(MA)
 MM = float(MM)
 Ecc = float('0.'+Ecc)
 SMA = MM2SMA(MM)
-TA = pyastro.kepler(MA,Ecc)
-
-print "Year:",EpochY,"\nDay:",EpochD,"\nInc:",Inc,"\nRAAN:",RAAN,"\nEcc:",Ecc
-print "AoP:",AoP,"\nMA:",MA,"\nMM:",MM, "\nTA:", TA, "\nSMA:", SMA
+EA = getEccentricAnomaly(Ecc, radians(MA))
+TA = getTrueAnomaly(Ecc, radians(EA))
 Epoch = (datetime(EpochY-1,12,31) + timedelta(EpochD)).strftime("%d %b %Y %H:%M:%S.%f")[:-3]
+
+print "Year:",EpochY,"\nDay:",EpochD,"\nInclination:",Inc,"\nRAAN:",RAAN,"\nEccentricity:",Ecc
+print "AoP:",AoP,"\nMean Anomaly:",MA,"\nEcc. Anomaly:", EA,"\nTrue Anomaly:", TA, "\nMM:",MM, "\nSemi Magor Axis:", SMA
 print "Epoch:", Epoch
 
 print("\nCreate Spacecraft "+SatName+";\n" +

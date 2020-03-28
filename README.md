@@ -3,8 +3,7 @@
 Converts TLE to Keplerian coordinates.  
 Generates GMAT Spacecraft code
 
-## Installation
-pip install pyastro
+**This project has moved to [GitLab](https://gitlab.com/drid/TLE2Keplerian)**
 
 ## Usage
 ```bash
